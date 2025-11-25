@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Basic Green Package",
+    "description": "A simple selection of indoor plants perfect for beginners",
+    "price": 29.99
+  },
+  {
+    "id": 2,
+    "name": "Premium Garden Package",
+    "description": "A curated collection of outdoor garden plants and flowers",
+    "price": 49.99
+  },
+  {
+    "id": 3,
+    "name": "Deluxe Indoor Oasis",
+    "description": "Luxury indoor plant collection with exotic varieties",
+    "price": 79.99
+  },
+  {
+    "id": 4,
+    "name": "Succulent Starter Kit",
+    "description": "Low-maintenance succulents and cacti collection",
+    "price": 39.99
+  },
+  {
+    "id": 5,
+    "name": "Seasonal Special",
+    "description": "Monthly rotating selection of seasonal plants",
+    "price": 44.99
+  }
+]
