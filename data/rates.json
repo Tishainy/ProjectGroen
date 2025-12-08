@@ -1,0 +1,29 @@
+{
+  "price_per_m2_gras": 1.5,
+  "price_per_m2_tegels": 2.0,
+  "price_per_meter_heg": 3.0,
+  "extra_options": {
+    "bemesten": 5.0,
+    "kanten_stecken": 2.5
+  },
+  "services": {
+    "gras_maaien": {
+      "name": "Gras maaien",
+      "description": "Gras maaien per m²",
+      "rate_key": "price_per_m2_gras",
+      "extras": []
+    },
+    "gras_maaien_kanten": {
+      "name": "Gras maaien + kanten steken",
+      "description": "Gras maaien met kanten steken",
+      "rate_key": "price_per_m2_gras",
+      "extras": ["kanten_stecken"]
+    },
+    "gras_maaien_bemesten": {
+      "name": "Gras maaien + bemesten",
+      "description": "Gras maaien met bemesting",
+      "rate_key": "price_per_m2_gras",
+      "extras": ["bemesten"]
+    }
+  }
+}

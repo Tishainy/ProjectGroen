@@ -27,6 +27,120 @@ async function loadPackages() {
   }
 }
 
+/**
+ * Load rates from data/rates.json
+ * @returns {Promise<Object>} rates object with pricing data
+ */
+async function loadRates() {
+  try {
+    const response = await fetch('./data/rates.json');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const rates = await response.json();
+    
+    // Store globally for use in other functions
+    window.rates = rates;
+    console.log('Tarieven geladen:', rates);
+    
+    return rates;
+  } catch (error) {
+    console.error('Fout bij laden tarieven:', error);
+    return null;
+  }
+}
+
+/**
+ * Calculate quote based on dimensions and service
+ * @param {Object} data - Contains length, width, and service selection
+ * @param {number} data.length - Lengte in meters
+ * @param {number} data.width - Breedte in meters
+ * @param {string} data.service - Service key (gras_maaien, gras_maaien_kanten, etc.)
+ * @returns {Object} Quote object with breakdown and total
+ */
+function calculateQuote(data) {
+  // Validation
+  if (!data || !data.length || !data.width || !data.service) {
+    return { 
+      error: 'Alle velden zijn verplicht en moeten positieve getallen zijn.',
+      total: 0
+    };
+  }
+
+  const length = parseFloat(data.length);
+  const width = parseFloat(data.width);
+  const serviceKey = data.service;
+
+  // Validate numbers
+  if (isNaN(length) || isNaN(width) || length <= 0 || width <= 0) {
+    return { 
+      error: 'Lengte en breedte moeten positieve getallen zijn.',
+      total: 0
+    };
+  }
+
+  // Get rates from global window object
+  const rates = window.rates;
+  if (!rates) {
+    return { 
+      error: 'Tarieven niet geladen. Probeer pagina opnieuw te laden.',
+      total: 0
+    };
+  }
+
+  // Get service config
+  const serviceConfig = rates.services[serviceKey];
+  if (!serviceConfig) {
+    return { 
+      error: 'Service niet gevonden.',
+      total: 0
+    };
+  }
+
+  // Calculate area
+  const area = length * width;
+
+  // Get base price
+  const rateKey = serviceConfig.rate_key;
+  const basePrice = rates[rateKey] || 0;
+  let total = area * basePrice;
+
+  // Build breakdown
+  const breakdown = [];
+  breakdown.push({
+    item: `${serviceConfig.name} (${area.toFixed(2)} m²)`,
+    quantity: area.toFixed(2),
+    unit: 'm²',
+    rate: basePrice,
+    subtotal: total
+  });
+
+  // Add extras
+  if (serviceConfig.extras && serviceConfig.extras.length > 0) {
+    serviceConfig.extras.forEach(extra => {
+      const extraPrice = rates.extra_options[extra] || 0;
+      const extraTotal = area * extraPrice;
+      total += extraTotal;
+      
+      breakdown.push({
+        item: extra === 'bemesten' ? 'Bemesten' : 'Kanten steken',
+        quantity: area.toFixed(2),
+        unit: 'm²',
+        rate: extraPrice,
+        subtotal: extraTotal
+      });
+    });
+  }
+
+  return {
+    error: null,
+    area: area.toFixed(2),
+    breakdown: breakdown,
+    total: total.toFixed(2)
+  };
+}
+
+
 // Registreer een bestelling (nu nog alleen naar console)
 function createOrder(orderData) {
   console.log('Bestelling aangemaakt:', orderData);
